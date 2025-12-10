@@ -48,3 +48,11 @@ main.main {
   min-height: 100vh;
   font-family: 'Times New Roman', Times, serif;
 }
+
+.check{
+  color: #2fff00;
+}
+
+.target{
+  color: red;
+}
