@@ -12,6 +12,8 @@ function TypingGame() {
 
     const [next, setNext] = useState(false)
 
+    const [error, setError] = useState(false)
+
 
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -21,6 +23,9 @@ function TypingGame() {
             if (id === target[cursor]) {
                 setCursor(cursor + 1)
                 setPalabra(palabra + target[cursor])
+                setError(false)
+            } else {
+                setError(true)
             }
             if (id === "Backspace") {
                 setCursor(0)
@@ -28,8 +33,8 @@ function TypingGame() {
             }
             if (palabra === target) {
                 setNext(true)
-            } else { 
-                setNext(false) 
+            } else {
+                setNext(false)
             }
         };
 
@@ -44,18 +49,27 @@ function TypingGame() {
         <main className='main' >
             <h1>Typing-pong</h1>
             <p>Presiona cualquier tecla...</p>
-            <p>Objetivo: <strong>' {target.split("").map((letra, index)=>{
+            <p>Objetivo: <strong>' {target.split("").map((letra, index) => {
                 let clase = "";
-                if(index < cursor) clase = "check"
-                if(index === cursor) clase = "target"
-                if( index > cursor) clase = ""
-                return(
+                if (index < cursor) clase = "check"
+                if (index === cursor) clase = "target"
+                if (index > cursor) clase = ""
+                return (
                     <span key={index} className={clase}>
                         {letra}
                     </span>
                 )
             })} '</strong></p>
-            <p>{key}</p>
+            <p className="letra-presionada">
+                {target.split('').map((letra, index) => {
+                    if (index === cursor && !error) {
+                        return <span key={index} className="correct">{key}</span>
+                    }
+                    if (index === cursor && error) {
+                        return <span key={index} className="incorrect">{key}</span>;
+                    }
+                })}
+            </p>
             <p>{palabra}</p>
             {next && <button>avanzar</button>}
         </main>

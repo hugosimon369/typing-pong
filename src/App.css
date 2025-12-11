@@ -49,10 +49,15 @@ main.main {
   font-family: 'Times New Roman', Times, serif;
 }
 
-.check{
+.check,
+.correct{
   color: #2fff00;
 }
 
 .target{
+  color: red;
+}
+
+.incorrect{
   color: red;
 }
