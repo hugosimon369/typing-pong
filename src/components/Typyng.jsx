@@ -134,6 +134,4 @@ function TypingGame() {
     )
 }
 
-setInterval
-
 export default TypingGame
