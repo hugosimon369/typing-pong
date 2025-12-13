@@ -125,10 +125,10 @@ function TypingGame() {
             </p>
             <p>{palabra}</p>
             <p>tiempo: {time}</p>
-            <p>presicion: {accuracy}</p>
-            <p>WPM: {wpm}</p>
-            <p>net WPM {netWpm}</p>
-            <p>new net WPM: {newNetWpm}</p>
+            <p>presicion: {accuracy.toFixed(2)}</p>
+            <p>WPM: {wpm.toFixed(2)}</p>
+            <p>net WPM {netWpm.toFixed(2)}</p>
+            <p>new net WPM: {newNetWpm.toFixed(2)}</p>
             {next && <button>avanzar</button>}
         </main>
     )
