@@ -6,7 +6,7 @@ function TypingGame() {
 
     const [cursor, setCursor] = useState(0)
 
-    const [target, setTarget] = useState("hola mundo")
+    const [target, setTarget] = useState("")
 
     const [palabra, setPalabra] = useState("")
 
@@ -26,50 +26,54 @@ function TypingGame() {
 
     const [timeLeft, setTimeLeft] = useState(600)
 
+    const [usedWords, setUsedWords] = useState([])
+
+
+
     let netWpm = Math.max(0, wpm - (keyIncorrect / timeInMinutes))
 
     let newNetWpm = (wpm * accuracy) / 100
 
     let time = (60 - (timeLeft / 10)).toFixed(1)
 
+
+
     useEffect(() => {
         const handleKeyDown = (e) => {
             const id = e.key
-            console.log("Tecla:", id); // Esto imprime la tecla 
             setKey(id)
-            if (startTime === null && id === target[cursor]) {
+            if (startTime === null && id === target[cursor]) { // inica el tiempo
                 setStartTime(Date.now())
             }
             if (palabra === target) { // Verifica si ya termino el objetivo
                 setNext(true)
                 setStartTime(null)
-                console.log("target completado")
             } else {
                 setNext(false)
             }
-            if (id === target[cursor]) {
+            if (id === target[cursor]) { // verificacion de KEY
                 setCursor(cursor + 1)
                 setPalabra(palabra + target[cursor])
                 setError(false)
                 let tiempo = (Date.now() - startTime) / 60000
                 setTimeInMinuetes(tiempo)
                 const keyTotal = keyIncorrect + cursor
-                const accuracy = (cursor / keyTotal) * 100
+                const accuracy = ((cursor / keyTotal) * 100).toFixed(2)
                 setAccuracy(accuracy)
                 setWpm((((cursor + 1) / 5) / tiempo))
             } else {
                 if (startTime) setKeyIncorrect((keyIncorrect + 1))
                 setError(true)
-                console.log(keyIncorrect + 1)
             }
-            if (id === "Backspace") {
+            if (id === "Backspace") { // reiniciar
                 setCursor(0)
                 setPalabra("")
                 setKeyIncorrect(0)
                 setTimeLeft(600)
             }
-            if (startTime === null && id === target[cursor]) {
-                setStartTime(Date.now())
+
+            if (target === ""){
+                
             }
         };
 
@@ -81,20 +85,36 @@ function TypingGame() {
     }, [cursor, palabra, key, keyIncorrect, startTime]);
 
 
-    useEffect(() => {
-        console.log(timeLeft) //verificacion de montaje
+    useEffect(() => { // cronometro
         let interval
         if (startTime && timeLeft > 0 && palabra !== target) {
             interval = setInterval(() => {
                 setTimeLeft(timeLeft - 1)
-                console.log("restando 1 segundo")
             }, 100);
             return () => clearInterval(interval)
         }
-
-
-
     }, [timeLeft, startTime, setInterval])
+
+
+    useEffect(() => {
+        const getTarget = async () => {
+            try {
+                const response = await fetch(`https://api.datamuse.com/words?sp=${target}*&v=${a}`)
+                const data = await response.json()
+
+            } catch (error) {
+                console.log("error: ", error)
+            }
+        }
+        getTarget()
+    }, [])
+
+
+    const handlePlayButton = () => {
+        if (target === ""){
+
+        }
+    }
 
 
 
@@ -125,11 +145,12 @@ function TypingGame() {
             </p>
             <p>{palabra}</p>
             <p>tiempo: {time}</p>
-            <p>presicion: {accuracy.toFixed(2)}</p>
+            <p>presicion: {accuracy}</p>
             <p>WPM: {wpm.toFixed(2)}</p>
             <p>net WPM {netWpm.toFixed(2)}</p>
             <p>new net WPM: {newNetWpm.toFixed(2)}</p>
             {next && <button>avanzar</button>}
+            {!next && <button onClick={handlePlayButton}>iniciar</button>}
         </main>
     )
 }
