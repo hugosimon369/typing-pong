@@ -10,9 +10,13 @@ function Game() {
 
     const [palabra, setPalabra] = useState("")
 
+    const [palabraEnviada, setPalabraEnviada] = useState()
+
+    const [usedWords, setUsedWords] = useState([])
+
     const [startTime, setStartTime] = useState(null)
 
-    const [next, setNext] = useState(false)
+    const [gameOver, setGameOver] = useState(false)
 
     const [wpm, setWpm] = useState(0)
 
@@ -21,8 +25,6 @@ function Game() {
     const [timeInMinutes, setTimeInMinuetes] = useState()
 
     const [timeLeft, setTimeLeft] = useState(5)
-
-    const [usedWords, setUsedWords] = useState([])
 
     const [keyUsed, setKeyUsed] = useState(0)
 
@@ -43,39 +45,34 @@ function Game() {
             const number = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
             setKey(id)
             console.log(id)
-
-            if (id !== 'Enter' && id !== number[id] && id !== 'Backspace' && play) { //agregando letra
+            //agregando letra
+            if (id !== 'Enter'
+                && id !== number[id]
+                && id !== 'Backspace'
+                && play) {
                 setPalabra(palabra + id)
                 setKeyUsed(keyUsed + 1)
                 if (startTime === null) {
                     setStartTime(Date.now())
                 }
-                console.log('key', { keyUsed })
+                console.log({ keyUsed })
             }
-
-            if (id === 'Enter' && palabra !== "") { // enviando palabra
-                let tiempo = (Date.now() - startTime) / 60000
-                const accuracy = ((palabra.length / keyUsed) * 100).toFixed(2)
-                setAccuracy(accuracy)
-                setWpm((((keyUsed + 1) / 5) / tiempo))
-                setStartTime(null)
-                console.log("palabra enviada a verificar: ", { palabra }, "time: ", { tiempo })
-                setNext(true)
-                if (playerUno) setPlayerUno(!playerUno)
-                if (playerDos) setPlayerDos(!playerDos)
+            // enviando palabra
+            if (id === 'Enter') {
+                processTurn()
             }
-
-            if (id === "Backspace") { // reiniciar
-                setPalabra(palabra)
+            // borrar letra, aun no completado (ahora borra todo)
+            if (id === "Backspace") {
+                setPalabra("")
             }
         };
-
+        // oyente del evento
         window.addEventListener('keydown', handleKeyDown);
-
+        // remover el oyente
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
-    }, [palabra, key, startTime, keyUsed, target, timeLeft]);
+    }, [palabra, key, startTime, keyUsed, target, timeLeft, play]);
 
 
     useEffect(() => { // cronometro
@@ -86,11 +83,7 @@ function Game() {
             }, 100);
             return () => {
                 if (timeLeft < 0.1) {
-                    setTarget("GAME-OVER")
-                    setPalabra("")
-                    setStartTime(null)
-                    setKeyUsed(0)
-                    setTimeLeft(5)
+                    setGameOver(true)
                 }
 
                 clearInterval(interval)
@@ -122,13 +115,52 @@ function Game() {
                 }
             }
         }
-        if (next) getTarget()
-    }, [next])
+        if (palabraEnviada) getTarget()
+    }, [palabraEnviada])
 
+
+    useEffect(() => {
+        if (gameOver) {
+            setTarget("GAME-OVER")
+            setPalabra("")
+            setStartTime(null)
+            setKeyUsed(0)
+            setTimeLeft(5)
+        } else {
+            return
+        }
+    }, [gameOver])
 
 
     const handlePlayButton = () => {
         setPlay(!play)
+        if (play) {
+            setTarget("")
+            setPalabra("")
+            setStartTime(null)
+            setKeyUsed(0)
+            setTimeLeft(5)
+        }
+    }
+
+    const processTurn = () => {
+        if (palabra)
+
+            if (usedWords.includes(palabra)) { // verficacion de palabra usada
+                setGameOver(true) // logica de game-over
+            } else {
+                setUsedWords(usedWords + palabra)
+                console.log(usedWords + palabra)
+            }
+
+        let tiempo = (Date.now() - startTime) / 60000
+        const accuracy = ((palabra.length / keyUsed) * 100).toFixed(2)
+        setAccuracy(accuracy)
+        setWpm((((keyUsed + 1) / 5) / tiempo))
+        setStartTime(null)
+        handlePlayButton()
+        setPalabraEnviada(palabra)
+        console.log("palabra enviada a verificar: ", { palabra }, "time: ", { tiempo })
     }
 
 
@@ -136,7 +168,9 @@ function Game() {
     return (
         <main className='main' >
             <h1>Typing-pong</h1>
-            <p>Presiona cualquier tecla...</p>
+            {!play && <p>Presiona Enter para empezar...</p>}
+            <p>Enviada: <strong>'{palabraEnviada}'</strong></p>
+            <p>Respuesta: <strong>'{}'</strong></p>
             <p>Objetivo: <strong>'{target}'</strong></p>
             <p>Respuesta: {palabra}</p>
             <p>keys: {keyUsed}</p>
@@ -144,8 +178,8 @@ function Game() {
             <p>presicion: {accuracy}</p>
             <p>WPM: {wpm.toFixed(2)}</p>
             <p>new net WPM: {newNetWpm.toFixed(2)}</p>
-            {play && <button onClick={handlePlayButton}>avanzar</button>}
-            {!play && <button onClick={handlePlayButton}>iniciar</button>}
+            {play && <button onClick={handlePlayButton} value="avanzar">avanzar</button>}
+            {!play && <button onClick={handlePlayButton} value='iniciar'>iniciar</button>}
         </main>
     )
 }
