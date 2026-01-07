@@ -64,26 +64,23 @@ function Game() {
     useEffect(() => {
         const fetchNewWord = async () => {
             if (!palabraEnviada) return;
-            
             try {
                 // LA MAGIA: Buscar palabras que empiecen con las últimas 2 letras
-                const semilla = palabraEnviada.slice(-2);
-                const response = await fetch(`https://api.datamuse.com/words?sp=${semilla}*&v=${language}&max=10`);
-                const data = await response.json();
                 const verification = await fetch(`https://api.datamuse.com/words?sp=${palabraEnviada}*&v=${language}&max=1`)
                 const verificacionData = await verification.json()
                 console.log(verificacionData)
-                if(verificacionData.length <= 0) {
+                if (verificacionData.length <= 0) {
                     triggerGameOver('palabra ireal')
                     return
                 }
+                const semilla = palabraEnviada.slice(-2);
+                const response = await fetch(`https://api.datamuse.com/words?sp=${semilla}*&v=${language}&max=10`);
+                const data = await response.json();
                 if (data.length > 0) {
                     // Elegir una al azar
                     const randomIndex = Math.floor(Math.random() * data.length);
                     const nuevaPalabra = data[randomIndex].word;
-                    
                     setTarget(nuevaPalabra);
-                    
                     // Reset para el turno del jugador
                     setPalabra("");
                     setTimeLeft(5);      // Restaurar tiempo
@@ -98,7 +95,6 @@ function Game() {
                 triggerGameOver("ERROR DE CONEXIÓN");
             }
         };
-
         fetchNewWord();
     }, [palabraEnviada, language]);
 
@@ -128,7 +124,7 @@ function Game() {
             if (timeElapsedMin > 0) {
                 const currentWpm = (palabra.length / 5) / timeElapsedMin;
                 const currentAccuracy = (palabra.length / keyUsed) * 100;
-                
+
                 setWpm(currentWpm);
                 setAccuracy(currentAccuracy);
             }
@@ -145,7 +141,7 @@ function Game() {
     const handleStartGame = () => {
         setPlay(true);
         setGameOver(false);
-        setTarget(""); 
+        setTarget("");
         setPalabra("");
         setPalabraEnviada("");
         setUsedWords([]);
@@ -160,7 +156,7 @@ function Game() {
     return (
         <main className='main'>
             <h1>Typing-Pong 🏓</h1>
-            
+
             {/* Panel de Estadísticas */}
             <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginBottom: '20px' }}>
                 <p>⏱️ {timeLeft.toFixed(1)}s</p>
@@ -177,10 +173,10 @@ function Game() {
                 <div>
                     {target && !gameOver && (
                         <p style={{ fontSize: '1.2em', color: '#888' }}>
-                            La máquina dijo: <strong style={{color:'yellow', fontSize:'1.3em'}}>{target}</strong> (Responde empezando con:  <span style={{color: 'green', fontSize:'1.3em'}}>{target.slice(-2)}</span>)
+                            La máquina dijo: <strong style={{ color: 'yellow', fontSize: '1.3em' }}>{target}</strong> (Responde empezando con:  <span style={{ color: 'green', fontSize: '1.3em' }}>{target.slice(-2)}</span>)
                         </p>
                     )}
-                    
+
                     {gameOver ? (
                         <h2 style={{ color: 'red' }}>{target}</h2>
                     ) : (
