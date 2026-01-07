@@ -1,185 +1,198 @@
 import { useEffect, useState } from 'react'
 
 function Game() {
-
+    // --- ESTADOS DEL JUEGO ---
     const [play, setPlay] = useState(false)
-
-    const [key, setKey] = useState()
-
-    const [target, setTarget] = useState("")
-
-    const [palabra, setPalabra] = useState("")
-
-    const [palabraEnviada, setPalabraEnviada] = useState()
-
-    const [usedWords, setUsedWords] = useState([])
-
-    const [startTime, setStartTime] = useState(null)
-
     const [gameOver, setGameOver] = useState(false)
+    const [target, setTarget] = useState("")         // Palabra que responde la máquina
+    const [palabra, setPalabra] = useState("")       // Lo que escribe el usuario
+    const [palabraEnviada, setPalabraEnviada] = useState("") // Disparador de la API
+    const [usedWords, setUsedWords] = useState([])   // Historial para no repetir
+    const [language, setLanguage] = useState('es')
 
-    const [wpm, setWpm] = useState(0)
-
-    const [accuracy, setAccuracy] = useState()
-
-    const [timeInMinutes, setTimeInMinuetes] = useState()
-
+    // --- MÉTRICAS ---
+    const [startTime, setStartTime] = useState(null)
     const [timeLeft, setTimeLeft] = useState(5)
-
+    const [wpm, setWpm] = useState(0)
+    const [accuracy, setAccuracy] = useState(0)
     const [keyUsed, setKeyUsed] = useState(0)
 
-    const [playerUno, setPlayerUno] = useState(false)
+    // Cálculo visual (evita NaN si es 0)
+    const netWpm = wpm > 0 ? (wpm * accuracy) / 100 : 0;
 
-    const [playerDos, setPlayerDos] = useState(false)
-
-
-    let newNetWpm = (wpm * accuracy) / 100
-
-    let time = (60 - (timeLeft / 10)).toFixed(1)
-
-
-
-    useEffect(() => { // Key detector
-        const handleKeyDown = (e) => {
-            const id = e.key
-            const number = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-            setKey(id)
-            console.log(id)
-            //agregando letra
-            if (id !== 'Enter'
-                && id !== number[id]
-                && id !== 'Backspace'
-                && play) {
-                setPalabra(palabra + id)
-                setKeyUsed(keyUsed + 1)
-                if (startTime === null) {
-                    setStartTime(Date.now())
-                }
-                console.log({ keyUsed })
-            }
-            // enviando palabra
-            if (id === 'Enter') {
-                processTurn()
-            }
-            // borrar letra, aun no completado (ahora borra todo)
-            if (id === "Backspace") {
-                setPalabra("")
-            }
-        };
-        // oyente del evento
-        window.addEventListener('keydown', handleKeyDown);
-        // remover el oyente
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-        };
-    }, [palabra, key, startTime, keyUsed, target, timeLeft, play]);
-
-
-    useEffect(() => { // cronometro
-        let interval
-        if (startTime && timeLeft >= 0) {
-            interval = setInterval(() => {
-                setTimeLeft(timeLeft - 0.1)
-            }, 100);
-            return () => {
-                if (timeLeft < 0.1) {
-                    setGameOver(true)
-                }
-
-                clearInterval(interval)
-            }
-        }
-    }, [timeLeft, startTime, setInterval])
-
-
-    useEffect(() => { // API
-        const getTarget = async () => {
-            if (playerUno) {
-                try {
-                    const response = await fetch(`https://api.datamuse.com/words?sp=${palabra}*&v=es`)
-                    const data = await response.json()
-                    console.log("data: ", data)
-                    setTarget(data)
-                } catch (error) {
-                    console.log("error: ", error)
-                }
-            }
-            if (playerDos) {
-                try {
-                    const response = await fetch(`https://api.datamuse.com/words?sp=${palabra}*&v=es`)
-                    const data = await response.json()
-                    console.log("data: ", data)
-                    setTarget(data)
-                } catch (error) {
-                    console.log("error: ", error)
-                }
-            }
-        }
-        if (palabraEnviada) getTarget()
-    }, [palabraEnviada])
-
-
+    // 1. MANEJO DE TECLAS (INPUT)
     useEffect(() => {
-        if (gameOver) {
-            setTarget("GAME-OVER")
-            setPalabra("")
-            setStartTime(null)
-            setKeyUsed(0)
-            setTimeLeft(5)
-        } else {
-            return
-        }
-    }, [gameOver])
+        if (!play || gameOver) return; // Bloquear si no está jugando
+        const handleKeyDown = (e) => {
+            const { key } = e;
+            // Detectar letras (ignora teclas especiales salvo Backspace/Enter)
+            if (key.length === 1 && key.match(/[a-zA-ZñÑáéíóúÁÉÍÓÚ]/)) {
+                if (startTime === null) setStartTime(Date.now()); // Inicia timer primera tecla
+                setPalabra(prev => prev + key);
+                setKeyUsed(prev => prev + 1);
+            }
+            if (key === 'Backspace') {
+                setPalabra(prev => prev.slice(0, -1)); // Borrado seguro
+            }
+            if (key === 'Enter') {
+                processTurn(); // Procesar jugada
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [play, gameOver, palabra, startTime]);
 
 
-    const handlePlayButton = () => {
-        setPlay(!play)
-        if (play) {
-            setTarget("")
-            setPalabra("")
-            setStartTime(null)
-            setKeyUsed(0)
-            setTimeLeft(5)
-        }
-    }
+    // 2. CRONÓMETRO (Cuenta Regresiva)
+    useEffect(() => {
+        if (!play || gameOver || startTime === null) return
+        const interval = setInterval(() => {
+            setTimeLeft((prevTime) => {
+                if (prevTime <= 0.1) {
+                    clearInterval(interval);
+                    triggerGameOver("¡SE ACABÓ EL TIEMPO!");
+                    return 0;
+                }
+                return prevTime - 0.1;
+            });
+        }, 100);
+        return () => clearInterval(interval);
+    }, [play, gameOver, startTime]);
+
+
+    // 3. API: CEREBRO DEL JUEGO (Turno de la Máquina)
+    useEffect(() => {
+        const fetchNewWord = async () => {
+            if (!palabraEnviada) return;
+            
+            try {
+                // LA MAGIA: Buscar palabras que empiecen con las últimas 2 letras
+                const semilla = palabraEnviada.slice(-2);
+                const response = await fetch(`https://api.datamuse.com/words?sp=${semilla}*&v=${language}&max=10`);
+                const data = await response.json();
+                const verification = await fetch(`https://api.datamuse.com/words?sp=${palabraEnviada}*&v=${language}&max=1`)
+                const verificacionData = await verification.json()
+                console.log(verificacionData)
+                if(verificacionData.length <= 0) {
+                    triggerGameOver('palabra ireal')
+                    return
+                }
+                if (data.length > 0) {
+                    // Elegir una al azar
+                    const randomIndex = Math.floor(Math.random() * data.length);
+                    const nuevaPalabra = data[randomIndex].word;
+                    
+                    setTarget(nuevaPalabra);
+                    
+                    // Reset para el turno del jugador
+                    setPalabra("");
+                    setTimeLeft(5);      // Restaurar tiempo
+                    setStartTime(null);  // Esperar tecla para arrancar de nuevo
+                    setKeyUsed(0);       // Resetear contador de teclas de este turno
+                    console.log(verificacionData)
+                } else {
+                    triggerGameOver("LA MÁQUINA SE RINDIÓ (No hay palabras)");
+                }
+            } catch (error) {
+                console.error("Error API:", error);
+                triggerGameOver("ERROR DE CONEXIÓN");
+            }
+        };
+
+        fetchNewWord();
+    }, [palabraEnviada, language]);
+
+
+    // --- LÓGICA DEL JUEGO ---
+
 
     const processTurn = () => {
-        if (palabra)
-
-            if (usedWords.includes(palabra)) { // verficacion de palabra usada
-                setGameOver(true) // logica de game-over
-            } else {
-                setUsedWords(usedWords + palabra)
-                console.log(usedWords + palabra)
+        if (!palabra) return;
+        // Validación 1: No repetir
+        if (usedWords.includes(palabra)) {
+            triggerGameOver("¡PALABRA REPETIDA!");
+            return;
+        }
+        // Validación 2: Verificar coincidencia (Opcional, Pong Estricto)
+        // Si hay target, la palabra debe empezar con las ultimas 2 del target
+        if (target && !palabra.startsWith(target.slice(-2))) {
+            triggerGameOver('No hay pong :( "devuelve una palabra empezando con la silaba final de tu rival"')
+            return
+        }
+        // Guardar en historial
+        setUsedWords(prev => [...prev, palabra]);
+        // Calcular Métricas
+        if (startTime) {
+            const timeElapsedMin = (Date.now() - startTime) / 60000; // Minutos reales
+            // Evitar división por cero
+            if (timeElapsedMin > 0) {
+                const currentWpm = (palabra.length / 5) / timeElapsedMin;
+                const currentAccuracy = (palabra.length / keyUsed) * 100;
+                
+                setWpm(currentWpm);
+                setAccuracy(currentAccuracy);
             }
+        }
+        // Pasar turno a la API
+        setPalabraEnviada(palabra);
+    };
 
-        let tiempo = (Date.now() - startTime) / 60000
-        const accuracy = ((palabra.length / keyUsed) * 100).toFixed(2)
-        setAccuracy(accuracy)
-        setWpm((((keyUsed + 1) / 5) / tiempo))
-        setStartTime(null)
-        handlePlayButton()
-        setPalabraEnviada(palabra)
-        console.log("palabra enviada a verificar: ", { palabra }, "time: ", { tiempo })
-    }
 
+    const triggerGameOver = (motivo) => {
+        setGameOver(true);
+        setTarget(motivo);
+    };
+    const handleStartGame = () => {
+        setPlay(true);
+        setGameOver(false);
+        setTarget(""); 
+        setPalabra("");
+        setPalabraEnviada("");
+        setUsedWords([]);
+        setTimeLeft(5);
+        setWpm(0);
+        setAccuracy(0);
+        setStartTime(null);
+        setKeyUsed(0);
+    };
 
 
     return (
-        <main className='main' >
-            <h1>Typing-pong</h1>
-            {!play && <p>Presiona Enter para empezar...</p>}
-            <p>Enviada: <strong>'{palabraEnviada}'</strong></p>
-            <p>Respuesta: <strong>'{}'</strong></p>
-            <p>Objetivo: <strong>'{target}'</strong></p>
-            <p>Respuesta: {palabra}</p>
-            <p>keys: {keyUsed}</p>
-            <p>tiempo: {timeLeft.toFixed(1)}</p>
-            <p>presicion: {accuracy}</p>
-            <p>WPM: {wpm.toFixed(2)}</p>
-            <p>new net WPM: {newNetWpm.toFixed(2)}</p>
-            {play && <button onClick={handlePlayButton} value="avanzar">avanzar</button>}
-            {!play && <button onClick={handlePlayButton} value='iniciar'>iniciar</button>}
+        <main className='main'>
+            <h1>Typing-Pong 🏓</h1>
+            
+            {/* Panel de Estadísticas */}
+            <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginBottom: '20px' }}>
+                <p>⏱️ {timeLeft.toFixed(1)}s</p>
+                <p>⚡ WPM: {wpm.toFixed(0)}</p>
+                <p>🎯 Precisión: {accuracy ? accuracy.toFixed(0) : 0}%</p>
+                <p>📊 Net: {netWpm.toFixed(0)}</p>
+            </div>
+            {/* Área de Juego */}
+            {!play ? (
+                <button onClick={handleStartGame}>
+                    {gameOver ? "Jugar de Nuevo" : "Iniciar Juego"}
+                </button>
+            ) : (
+                <div>
+                    {target && !gameOver && (
+                        <p style={{ fontSize: '1.2em', color: '#888' }}>
+                            La máquina dijo: <strong style={{color:'yellow', fontSize:'1.3em'}}>{target}</strong> (Responde empezando con:  <span style={{color: 'green', fontSize:'1.3em'}}>{target.slice(-2)}</span>)
+                        </p>
+                    )}
+                    
+                    {gameOver ? (
+                        <h2 style={{ color: 'red' }}>{target}</h2>
+                    ) : (
+                        <>
+                            <p style={{ fontSize: '2em', fontWeight: 'bold' }}>
+                                {palabra}<span className="cursor">|</span>
+                            </p>
+                            <small>Historial: {usedWords.length} palabras</small>
+                        </>
+                    )}
+                </div>
+            )}
         </main>
     )
 }
