@@ -10,9 +10,11 @@
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -41,23 +43,29 @@
 }
 
 
-
-/* main */
-
 main.main {
   min-height: 100vh;
   font-family: 'Times New Roman', Times, serif;
 }
 
-.check,
-.correct{
+
+/* GameOver datos */
+
+
+.game-over-datos {
+  font-size: 1.3rem;
+
+  .game-over-target > strong {
+    color: #2fff00;
+  }
+}
+.game-over-target-slice > strong{
   color: #2fff00;
 }
-
-.target{
+.game-over-respuesta > strong{
   color: red;
 }
-
-.incorrect{
-  color: red;
+.game-over-turnos {
+  font-size: 2.4rem;
+  strong{color: #2fff00;}
 }

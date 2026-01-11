@@ -4,6 +4,7 @@ function Game() {
     // --- ESTADOS DEL JUEGO ---
     const [play, setPlay] = useState(false)
     const [gameOver, setGameOver] = useState(false)
+    const [endMessenge, setEndMessenge] = useState()
     const [target, setTarget] = useState("")         // Palabra que responde la máquina
     const [palabra, setPalabra] = useState("")       // Lo que escribe el usuario
     const [palabraEnviada, setPalabraEnviada] = useState("") // Disparador de la API
@@ -136,7 +137,8 @@ function Game() {
 
     const triggerGameOver = (motivo) => {
         setGameOver(true);
-        setTarget(motivo);
+        setEndMessenge(motivo);
+        setPlay(false)
     };
     const handleStartGame = () => {
         setPlay(true);
@@ -165,6 +167,25 @@ function Game() {
                 <p>📊 Net: {netWpm.toFixed(0)}</p>
             </div>
             {/* Área de Juego */}
+            {gameOver &&
+                <>
+                    <div  className='game-over-datos'>
+                        <h2 className='game-over-turnos'>turnos sobrevividos: <strong>{usedWords.length}</strong></h2>
+                        <h2 className='game-over-target'>
+                            Maquina: <strong>{target}</strong>
+                        </h2>
+                        <h2 className='game-over-target-slice'>
+                            Objetivo: <strong>{target.slice(-2)}</strong>
+                        </h2>
+                        <h2 className='game-over-respuesta'>
+                            tú: <strong>{palabra}</strong>
+                        </h2>
+                    </div>
+                    <p style={{ color: 'red' }}>
+                        {endMessenge}
+                    </p>
+                </>
+            }
             {!play ? (
                 <button onClick={handleStartGame}>
                     {gameOver ? "Jugar de Nuevo" : "Iniciar Juego"}
@@ -177,9 +198,7 @@ function Game() {
                         </p>
                     )}
 
-                    {gameOver ? (
-                        <h2 style={{ color: 'red' }}>{target}</h2>
-                    ) : (
+                    {!gameOver && (
                         <>
                             <p style={{ fontSize: '2em', fontWeight: 'bold' }}>
                                 {palabra}<span className="cursor">|</span>
