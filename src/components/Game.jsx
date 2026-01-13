@@ -156,11 +156,11 @@ function Game() {
 
 
     return (
-        <main className='main'>
+        <main className='game-container'>
             <h1>Typing-Pong 🏓</h1>
 
             {/* Panel de Estadísticas */}
-            <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginBottom: '20px' }}>
+            <div className='game-stats' style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginBottom: '20px' }}>
                 <p>⏱️ {timeLeft.toFixed(1)}s</p>
                 <p>⚡ WPM: {wpm.toFixed(0)}</p>
                 <p>🎯 Precisión: {accuracy ? accuracy.toFixed(0) : 0}%</p>
@@ -169,7 +169,7 @@ function Game() {
             {/* Área de Juego */}
             {gameOver &&
                 <>
-                    <div  className='game-over-datos'>
+                    <div className='game-over-datos'>
                         <h2 className='game-over-turnos'>turnos sobrevividos: <strong>{usedWords.length}</strong></h2>
                         <h2 className='game-over-target'>
                             Maquina: <strong>{target}</strong>
@@ -180,14 +180,14 @@ function Game() {
                         <h2 className='game-over-respuesta'>
                             tú: <strong>{palabra}</strong>
                         </h2>
+                        <p className='game-over-mensaje-error' style={{ color: 'red' }}>
+                            {endMessenge}
+                        </p>
                     </div>
-                    <p style={{ color: 'red' }}>
-                        {endMessenge}
-                    </p>
                 </>
             }
             {!play ? (
-                <button onClick={handleStartGame}>
+                <button className='game-button' onClick={handleStartGame}>
                     {gameOver ? "Jugar de Nuevo" : "Iniciar Juego"}
                 </button>
             ) : (

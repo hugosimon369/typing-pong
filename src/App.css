@@ -4,6 +4,25 @@
   text-align: center;
 }
 
+/* --- 1. VARIABLES Y BASE (La Paleta Arcade) --- */
+:root {
+  --neon-green: #39ff14;
+  --neon-red: #ff3131;
+  --neon-blue: #04d9ff;
+  --neon-yellow: #fff01f;
+  --bg-overlay: rgba(0, 0, 0, 0.7); /* Fondo oscuro semitransparente */
+  --font-main: 'Courier New', Courier, monospace; /* Fuente retro */
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-main);
+  background-color: #000;
+  color: var(--neon-green);
+  overflow: hidden; /* Evita scrollbars */
+  text-shadow: 0 0 5px rgba(57, 255, 20, 0.5); /* Resplandor suave en todo el texto */
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;
@@ -23,6 +42,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -43,7 +63,7 @@
 }
 
 
-main.main {
+main.game {
   min-height: 100vh;
   font-family: 'Times New Roman', Times, serif;
 }
@@ -55,17 +75,214 @@ main.main {
 .game-over-datos {
   font-size: 1.3rem;
 
-  .game-over-target > strong {
+  .game-over-target>strong {
     color: #2fff00;
   }
 }
-.game-over-target-slice > strong{
+
+.game-over-target-slice>strong {
   color: #2fff00;
 }
-.game-over-respuesta > strong{
+
+.game-over-respuesta>strong {
   color: red;
 }
+
 .game-over-turnos {
   font-size: 2.4rem;
-  strong{color: #2fff00;}
+
+  strong {
+    color: #2fff00;
+  }
+}
+
+
+/* bg video */
+
+
+.video-intro,
+.video-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  /* TU LÓGICA DE DESBORDAMIENTO: */
+  object-fit: cover;
+  /* "Llena el div de margen (la pantalla) sin deformarte" */
+  object-position: center;
+  /* "Pase lo que pase, el centro del video es sagrado" */
+  z-index: -1;
+  transform: scale(1)
+}
+/* El contenedor del juego flota encima */
+.container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+@media (min-width: 400px) {
+  .video-bg {
+    transform: scale(1.4);
+    top: 20px
+  }
+}
+@media (min-width: 500px) {
+  .video-bg {
+    transform: scale(1.65);
+    top: 80px
+  }
+}
+@media (min-width: 600px) {
+  .video-bg {
+    transform: scale(1.75);
+    top: 120px
+  }
+}
+@media (min-width: 700px) {
+  .video-bg {
+    transform: scale(1.85);
+    top: 140px
+  }
+}
+@media (min-width: 1000px) {
+  .video-bg {
+    transform: scale(1.58);
+    top: 140px
+  }
+}
+
+/* Transicion */
+
+.flash-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: white; /* Luz pura */
+  z-index: 100; /* Encima de absolutamente todo */
+  /* La animación de desvanecimiento */
+  animation: fadeOut 0.5s ease-out forwards;
+  pointer-events: none; /* Permite clicks a través del flash */
+}
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* GAME */
+
+/* Centra el juego en la pantalla */
+.main-container, .game-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Centrado vertical */
+  align-items: center;     /* Centrado horizontal */
+  z-index: 10;
+}
+
+/* Título */
+h1 {
+  font-size: 3rem;
+  color: var(--neon-blue);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  text-shadow: 0 0 10px var(--neon-blue);
+  letter-spacing: 5px;
+}
+
+/* --- 4. INTERFAZ DE JUEGO (HUD) --- */
+
+/* Panel de estadísticas (Sobrescribe tus estilos inline para mejor control) */
+.game-stats {
+  background-color: var(--bg-overlay);
+  padding: 15px 30px;
+  border: 2px solid var(--neon-blue);
+  border-radius: 10px;
+  box-shadow: 0 0 15px var(--neon-blue);
+  backdrop-filter: blur(5px); /* Efecto borroso detrás */
+  
+  display: flex;
+  gap: 20px;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+/* Botón de Jugar */
+button.game-button {
+  background: transparent;
+  color: var(--neon-yellow);
+  border: 2px solid var(--neon-yellow);
+  padding: 15px 40px;
+  font-size: 1.5rem;
+  font-family: var(--font-main);
+  cursor: pointer;
+  text-transform: uppercase;
+  box-shadow: 0 0 10px var(--neon-yellow);
+  transition: all 0.3s ease;
+  margin-top: 30px;
+}
+
+button.game-button:hover {
+  background-color: var(--neon-yellow);
+  color: #000;
+  box-shadow: 0 0 20px var(--neon-yellow);
+}
+
+/* Input del Jugador (La palabra que escribes) */
+/* El cursor parpadeante */
+.cursor {
+  display: inline-block;
+  width: 10px;
+  background-color: var(--neon-green);
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* --- 5. PANTALLA DE GAME OVER --- */
+
+.game-over-datos {
+  background-color: rgba(20, 0, 0, 0.9); /* Rojo muy oscuro semitransparente */
+  border: 3px solid var(--neon-red);
+  padding: 40px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 0 30px var(--neon-red), inset 0 0 20px rgba(255, 0, 0, 0.2);
+  max-width: 600px;
+  width: 90%;
+}
+
+.game-over-mensaje-error {
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  font-weight: bold;
+  margin-top: 20px;
+  text-shadow: 0 0 10px var(--neon-red);
+}
+
+/* Detalles específicos del Game Over */
+.game-over-turnos, .game-over-target, .game-over-respuesta {
+  margin: 10px 0;
+  font-size: 1.2rem;
+  color: #fff;
+}
+
+strong {
+  color: var(--neon-yellow); /* Resaltar datos importantes */
 }
