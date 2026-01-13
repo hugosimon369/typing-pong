@@ -10,8 +10,10 @@
   --neon-red: #ff3131;
   --neon-blue: #04d9ff;
   --neon-yellow: #fff01f;
-  --bg-overlay: rgba(0, 0, 0, 0.7); /* Fondo oscuro semitransparente */
-  --font-main: 'Courier New', Courier, monospace; /* Fuente retro */
+  --bg-overlay: rgba(0, 0, 0, 0.7);
+  /* Fondo oscuro semitransparente */
+  --font-main: 'Courier New', Courier, monospace;
+  /* Fuente retro */
 }
 
 body {
@@ -19,8 +21,10 @@ body {
   font-family: var(--font-main);
   background-color: #000;
   color: var(--neon-green);
-  overflow: hidden; /* Evita scrollbars */
-  text-shadow: 0 0 5px rgba(57, 255, 20, 0.5); /* Resplandor suave en todo el texto */
+  overflow: hidden;
+  /* Evita scrollbars */
+  text-shadow: 0 0 5px rgba(57, 255, 20, 0.5);
+  /* Resplandor suave en todo el texto */
 }
 
 .logo {
@@ -115,6 +119,9 @@ main.game {
   z-index: -1;
   transform: scale(1)
 }
+.video-intro{
+  z-index: 1
+}
 /* El contenedor del juego flota encima */
 .container {
   position: absolute;
@@ -127,30 +134,35 @@ main.game {
   align-items: center;
   z-index: 10;
 }
+
 @media (min-width: 400px) {
   .video-bg {
     transform: scale(1.4);
     top: 20px
   }
 }
+
 @media (min-width: 500px) {
   .video-bg {
     transform: scale(1.65);
     top: 80px
   }
 }
+
 @media (min-width: 600px) {
   .video-bg {
     transform: scale(1.75);
     top: 120px
   }
 }
+
 @media (min-width: 700px) {
   .video-bg {
     transform: scale(1.85);
     top: 140px
   }
 }
+
 @media (min-width: 1000px) {
   .video-bg {
     transform: scale(1.58);
@@ -166,21 +178,32 @@ main.game {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: white; /* Luz pura */
-  z-index: 100; /* Encima de absolutamente todo */
+  background-color: white;
+  /* Luz pura */
+  z-index: 100;
+  /* Encima de absolutamente todo */
   /* La animación de desvanecimiento */
   animation: fadeOut 0.5s ease-out forwards;
-  pointer-events: none; /* Permite clicks a través del flash */
+  pointer-events: none;
+  /* Permite clicks a través del flash */
 }
+
 @keyframes fadeOut {
-  0% { opacity: 1; }
-  100% { opacity: 0; }
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
 }
 
 /* GAME */
 
-/* Centra el juego en la pantalla */
-.main-container, .game-container {
+
+.main-container,
+.game-container {
+  /* Centra el juego en la pantalla */
   position: absolute;
   top: 0;
   left: 0;
@@ -188,13 +211,15 @@ main.game {
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Centrado vertical */
-  align-items: center;     /* Centrado horizontal */
+  justify-content: center;
+  /* Centrado vertical */
+  align-items: center;
+  /* Centrado horizontal */
   z-index: 10;
 }
 
-/* Título */
 h1 {
+  /* Título */
   font-size: 3rem;
   color: var(--neon-blue);
   text-transform: uppercase;
@@ -204,16 +229,15 @@ h1 {
 }
 
 /* --- 4. INTERFAZ DE JUEGO (HUD) --- */
-
-/* Panel de estadísticas (Sobrescribe tus estilos inline para mejor control) */
 .game-stats {
+  /* Panel de estadísticas (Sobrescribe tus estilos inline para mejor control) */
   background-color: var(--bg-overlay);
   padding: 15px 30px;
   border: 2px solid var(--neon-blue);
   border-radius: 10px;
   box-shadow: 0 0 15px var(--neon-blue);
-  backdrop-filter: blur(5px); /* Efecto borroso detrás */
-  
+  backdrop-filter: blur(5px);
+  /* Efecto borroso detrás */
   display: flex;
   gap: 20px;
   font-size: 1.2rem;
@@ -251,14 +275,22 @@ button.game-button:hover {
 }
 
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
 }
 
 /* --- 5. PANTALLA DE GAME OVER --- */
 
 .game-over-datos {
-  background-color: rgba(20, 0, 0, 0.9); /* Rojo muy oscuro semitransparente */
+  background-color: rgba(20, 0, 0, 0.9);
+  /* Rojo muy oscuro semitransparente */
   border: 3px solid var(--neon-red);
   padding: 40px;
   border-radius: 15px;
@@ -277,12 +309,15 @@ button.game-button:hover {
 }
 
 /* Detalles específicos del Game Over */
-.game-over-turnos, .game-over-target, .game-over-respuesta {
+.game-over-turnos,
+.game-over-target,
+.game-over-respuesta {
   margin: 10px 0;
   font-size: 1.2rem;
   color: #fff;
 }
 
 strong {
-  color: var(--neon-yellow); /* Resaltar datos importantes */
+  color: var(--neon-yellow);
+  /* Resaltar datos importantes */
 }
