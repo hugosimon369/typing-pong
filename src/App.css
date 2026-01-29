@@ -119,9 +119,11 @@ main.game {
   z-index: -1;
   transform: scale(1)
 }
-.video-intro{
+
+.video-intro {
   z-index: 1
 }
+
 /* El contenedor del juego flota encima */
 .container {
   position: absolute;
@@ -135,40 +137,6 @@ main.game {
   z-index: 10;
 }
 
-@media (min-width: 400px) {
-  .video-bg {
-    transform: scale(1.4);
-    top: 20px
-  }
-}
-
-@media (min-width: 500px) {
-  .video-bg {
-    transform: scale(1.65);
-    top: 80px
-  }
-}
-
-@media (min-width: 600px) {
-  .video-bg {
-    transform: scale(1.75);
-    top: 120px
-  }
-}
-
-@media (min-width: 700px) {
-  .video-bg {
-    transform: scale(1.85);
-    top: 140px
-  }
-}
-
-@media (min-width: 1000px) {
-  .video-bg {
-    transform: scale(1.58);
-    top: 140px
-  }
-}
 
 /* Transicion */
 
@@ -242,6 +210,13 @@ h1 {
   gap: 20px;
   font-size: 1.2rem;
   font-weight: bold;
+  margin: 40px 0 0 0;
+}
+
+.game-text,
+.game-button {
+  margin-top: 100px;
+  margin-bottom: 10px;
 }
 
 /* Botón de Jugar */
@@ -320,4 +295,53 @@ button.game-button:hover {
 strong {
   color: var(--neon-yellow);
   /* Resaltar datos importantes */
+}
+
+
+@media (min-width: 400px) {
+  .video-bg {
+    transform: scale(1.4);
+    top: 20px
+  }
+
+}
+
+@media (min-width: 500px) {
+  .video-bg {
+    transform: scale(1.65);
+    top: 80px
+  }
+}
+
+@media (min-width: 600px) {
+  .video-bg {
+    transform: scale(1.75);
+    top: 120px
+  }
+}
+
+@media (min-width: 700px) {
+  .video-bg {
+    transform: scale(1.85);
+    top: 140px
+  }
+
+  .game-text,
+  .game-button {
+    margin-top: 150px;
+    margin-bottom: 10px;
+  }
+}
+
+@media (min-width: 1000px) {
+  .video-bg {
+    transform: scale(1.58);
+    top: 140px
+  }
+
+  .game-text,
+  .game-button {
+    margin-bottom: 10px;
+    margin-top: 150px;
+  }
 }

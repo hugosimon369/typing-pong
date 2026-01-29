@@ -159,14 +159,33 @@ function Game() {
         <main className='game-container'>
             {/*<h1>Typing-Pong 🏓</h1>*/}
 
-            {/* Panel de Estadísticas */}
-            <div className='game-stats' style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginBottom: '20px' }}>
-                <p>⏱️ {timeLeft.toFixed(1)}s</p>
-                <p>⚡ WPM: {wpm.toFixed(0)}</p>
-                <p>🎯 Precisión: {accuracy ? accuracy.toFixed(0) : 0}%</p>
-                <p>📊 Net: {netWpm.toFixed(0)}</p>
-            </div>
+            
             {/* Área de Juego */}
+            
+            <div className='game-button'>
+            {!play ? (
+                <button className='game-button' onClick={handleStartGame}>
+                    {gameOver ? "Jugar de Nuevo" : "Iniciar Juego"}
+                </button>
+            ) : (
+                <div>
+                    {target && !gameOver && (
+                        <p style={{ fontSize: '1.2em', color: '#888' }}>
+                            La máquina dijo: <strong style={{ color: 'yellow', fontSize: '1.3em' }}>{target}</strong> (Responde empezando con:  <span style={{ color: 'green', fontSize: '1.3em' }}>{target.slice(-2)}</span>)
+                        </p>
+                    )}
+
+                    {!gameOver && (
+                        <>
+                            <p className='game-text' style={{ fontSize: '2em', fontWeight: 'bold' }}>
+                                {palabra}<span className="cursor">|</span>
+                            </p>
+                            <small>Historial: {usedWords.length} palabras</small>
+                        </>
+                    )}
+                </div>
+            )}
+            </div>
             {gameOver &&
                 <>
                     <div className='game-over-datos'>
@@ -186,28 +205,13 @@ function Game() {
                     </div>
                 </>
             }
-            {!play ? (
-                <button className='game-button' onClick={handleStartGame}>
-                    {gameOver ? "Jugar de Nuevo" : "Iniciar Juego"}
-                </button>
-            ) : (
-                <div>
-                    {target && !gameOver && (
-                        <p style={{ fontSize: '1.2em', color: '#888' }}>
-                            La máquina dijo: <strong style={{ color: 'yellow', fontSize: '1.3em' }}>{target}</strong> (Responde empezando con:  <span style={{ color: 'green', fontSize: '1.3em' }}>{target.slice(-2)}</span>)
-                        </p>
-                    )}
-
-                    {!gameOver && (
-                        <>
-                            <p style={{ fontSize: '2em', fontWeight: 'bold' }}>
-                                {palabra}<span className="cursor">|</span>
-                            </p>
-                            <small>Historial: {usedWords.length} palabras</small>
-                        </>
-                    )}
-                </div>
-            )}
+            {/* Panel de Estadísticas */}
+            <div className='game-stats' style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginBottom: '20px' }}>
+                <p>⏱️ {timeLeft.toFixed(1)}s</p>
+                <p>⚡ WPM: {wpm.toFixed(0)}</p>
+                <p>🎯 Precisión: {accuracy ? accuracy.toFixed(0) : 0}%</p>
+                <p>📊 Net: {netWpm.toFixed(0)}</p>
+            </div>
         </main>
     )
 }
