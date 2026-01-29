@@ -157,7 +157,7 @@ function Game() {
 
     return (
         <main className='game-container'>
-            <h1>Typing-Pong 🏓</h1>
+            {/*<h1>Typing-Pong 🏓</h1>*/}
 
             {/* Panel de Estadísticas */}
             <div className='game-stats' style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginBottom: '20px' }}>

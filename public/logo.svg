@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+    <defs>
+        <filter id="neon-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
+            <feMerge>
+                <feMergeNode in="coloredBlur" />
+                <feMergeNode in="SourceGraphic" />
+            </feMerge>
+        </filter>
+    </defs>
+
+    <rect x="20" y="30" width="160" height="120" rx="20" ry="20"
+        stroke="#04d9ff" stroke-width="4" fill="rgba(0,0,0,0.5)" filter="url(#neon-glow)" />
+
+    <path d="M40 45 L160 45" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-linecap="round" />
+
+    <rect x="35" y="70" width="8" height="40" fill="#39ff14" filter="url(#neon-glow)" />
+
+    <path d="M80 85 L90 90 L80 95" stroke="#fff01f" stroke-width="3" fill="none"
+        filter="url(#neon-glow)" />
+    <rect x="95" y="85" width="8" height="10" fill="#ff3131" class="cursor-blink" />
+
+    <style>
+        .cursor-blink { animation: blink 1s step-end infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+    </style>
+</svg>
