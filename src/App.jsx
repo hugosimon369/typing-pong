@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import './App.css'
-import TypingGame from './components/typyng'
 import Game from './components/game'
 import introVideo from './assets/maquina-retro-typig.mp4'
 import bgVideo from './assets/BgVideo.mp4'
