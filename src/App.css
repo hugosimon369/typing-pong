@@ -335,7 +335,7 @@ strong {
 
 @media (min-width: 1000px) {
   .video-bg {
-    transform: scale(1.58);
+    transform: scale(1.4);
     top: 140px
   }
 
